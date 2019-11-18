@@ -11,6 +11,7 @@ namespace Arbeidsplan.Repository
     {
         private readonly RepositoryContext _repoContext;
         private IEmployeeRepository _employee;
+        private IDayRepository _day;
 
         public IEmployeeRepository Employee
         {
@@ -21,6 +22,17 @@ namespace Arbeidsplan.Repository
                     _employee = new EmployeeRepository(_repoContext);
                 }
                 return _employee;
+            }
+        }
+        public IDayRepository Day
+        {
+            get
+            {
+                if (_day == null)
+                {
+                    _day = new DayRepository(_repoContext);
+                }
+                return _day;
             }
         }
         public RepositoryWrapper(RepositoryContext repositoryContext)

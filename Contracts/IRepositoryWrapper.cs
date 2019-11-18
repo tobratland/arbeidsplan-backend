@@ -8,6 +8,7 @@ namespace Arbeidsplan.Contracts
     public interface IRepositoryWrapper
     {
         IEmployeeRepository Employee { get; }
+        IDayRepository Day { get; }
         void Save();
     }
 }

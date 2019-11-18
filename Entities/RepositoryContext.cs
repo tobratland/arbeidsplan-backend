@@ -1,4 +1,5 @@
-﻿using Arbeidsplan.Models;
+﻿using Arbeidsplan.Entities.Models;
+using Arbeidsplan.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Arbeidsplan.Entities
         }
 
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Day> Days { get; set; }
     }
 }
 
