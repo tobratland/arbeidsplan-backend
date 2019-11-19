@@ -1,5 +1,6 @@
 ﻿using Arbeidsplan.Contracts;
 using Arbeidsplan.Entities;
+using Arbeidsplan.Entities.Extensions;
 using Arbeidsplan.Entities.Models;
 using System;
 using System.Collections.Generic;
@@ -16,32 +17,41 @@ namespace Arbeidsplan.Repository
         }
         public Day CreateDay(Day day)
         {
-            throw new NotImplementedException();
+            day.Id = Guid.NewGuid();
+            Create(day);
+            return (day);
         }
 
         public void DeleteDay(Day day)
         {
-            throw new NotImplementedException();
+            Delete(day);
         }
 
         public IEnumerable<Day> GetAllDays()
         {
-            throw new NotImplementedException();
+            return FindAll()
+                .OrderBy(e => e.Date)
+                .ToList();
         }
 
         public Day GetDayByDate(DateTime date)
         {
-            throw new NotImplementedException();
+            return FindByCondition(d => d.Date.Equals(date))
+                .DefaultIfEmpty()
+                .FirstOrDefault();
         }
 
         public Day GetDayById(Guid id)
         {
-            throw new NotImplementedException();
+            return FindByCondition(d => d.Id.Equals(id))
+                       .DefaultIfEmpty()
+                       .FirstOrDefault();
         }
 
         public void UpdateDay(Day dbDay, Day day)
         {
-            throw new NotImplementedException();
+            dbDay.Map(day);
+            Update(dbDay);
         }
     }
 }

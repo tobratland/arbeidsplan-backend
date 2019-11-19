@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Arbeidsplan.Contracts;
+using Arbeidsplan.Entities.Extensions;
+using Arbeidsplan.Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,36 +14,130 @@ namespace Arbeidsplan.Controllers
     [ApiController]
     public class DayController : ControllerBase
     {
+        private readonly IRepositoryWrapper _repository;
+
+        public DayController(IRepositoryWrapper repository)
+        {
+            _repository = repository;
+        }
         // GET: api/Day
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult GetAllDays()
         {
-            return new string[] { "value1", "value2" };
+            try
+            {
+                var days = _repository.Day.GetAllDays();
+                return Ok(days);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         // GET: api/Day/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpGet("{id}", Name = "dayById")]
+        public IActionResult GetDayById(Guid id)
         {
-            return "value";
+            try
+            {
+                var day = _repository.Day.GetDayById(id);
+                if (day.IsEmptyObject())
+                {
+                    return NotFound();
+                }
+                else return Ok(day);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         // POST: api/Day
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult CreateDay([FromBody] Day day)
         {
+            try
+            {
+                if (day.IsObjectNull())
+                {
+                    return BadRequest("Score object is null");
+                }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid object model");
+                }
+                if (_repository.Day.GetDayByDate(day.Date) == null)
+                {
+                    _repository.Day.CreateDay(day);
+                    _repository.Save();
+                    return CreatedAtRoute("EmployeeById", new { id = day.Id }, day);
+
+                }
+                return StatusCode(500, "Day allready exists");
+
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         // PUT: api/Day/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult UpdateEmployee(Guid id, [FromBody] Day day)
         {
+            try
+            {
+                if (day.IsObjectNull())
+                {
+                    return BadRequest("account object is null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid model object");
+                }
+
+                var dbDay = _repository.Day.GetDayById(id);
+                if (dbDay.IsEmptyObject())
+                {
+                    return NotFound();
+                }
+
+                _repository.Day.UpdateDay(dbDay, day);
+                _repository.Save();
+
+                return Ok(day);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult DeleteDay(Guid id)
         {
+            try
+            {
+                var day = _repository.Day.GetDayById(id);
+                if (day.IsEmptyObject())
+                {
+                    return NotFound();
+                }
+
+                _repository.Day.DeleteDay(day);
+                _repository.Save();
+
+                return Ok("deleted");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
