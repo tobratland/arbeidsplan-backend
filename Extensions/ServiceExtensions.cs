@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Arbeidsplan.Contracts;
 using Arbeidsplan.Repository;
+using Arbeidsplan.Services;
 
 namespace Arbeidsplan.Extensions
 {
@@ -31,6 +32,7 @@ namespace Arbeidsplan.Extensions
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         {
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<ICalendarLogic, CalendarLogic>();
         }
     }
 }

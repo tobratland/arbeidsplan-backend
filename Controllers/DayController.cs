@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Arbeidsplan.Contracts;
+using Arbeidsplan.Services;
 using Arbeidsplan.Entities.Extensions;
 using Arbeidsplan.Entities.Models;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,11 @@ namespace Arbeidsplan.Controllers
     public class DayController : ControllerBase
     {
         private readonly IRepositoryWrapper _repository;
-
-        public DayController(IRepositoryWrapper repository)
+        private readonly ICalendarLogic _logic;
+        public DayController(IRepositoryWrapper repository, ICalendarLogic logic)
         {
             _repository = repository;
+            _logic = logic;
         }
         // GET: api/Day
         [HttpGet]
@@ -33,6 +35,17 @@ namespace Arbeidsplan.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        [HttpGet("{fromDateTime}/{toDateTime}", Name="DaysByDates")]
+        public IActionResult GetDaysWithinDateRange(DateTime fromDateTime, DateTime toDateTime)
+        {
+            if(fromDateTime.Date >= toDateTime.Date)
+            {
+                return BadRequest("Startdate needs to be before end date");
+            }
+            var days =  _repository.Day.GetDaysWithinDateRange(fromDateTime, toDateTime);
+            return Ok(days);
         }
 
         // GET: api/Day/5
@@ -76,6 +89,24 @@ namespace Arbeidsplan.Controllers
 
                 }
                 return StatusCode(500, "Day allready exists");
+
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost("{fromDateTime}/{toDateTime}", Name = "DaysByDates")]
+        public IActionResult CreateDays(DateTime fromDateTime, DateTime toDateTime)
+        {
+            try
+            {
+
+                if(fromDateTime >= toDateTime) {
+                    return BadRequest("startdate must be before enddate");
+                }
+                _logic.PopulateDateRangeWithDays(fromDateTime, toDateTime);
+                return Ok("Days created");
 
             }
             catch(Exception ex)

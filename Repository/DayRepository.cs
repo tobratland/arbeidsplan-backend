@@ -40,6 +40,12 @@ namespace Arbeidsplan.Repository
                 .DefaultIfEmpty()
                 .FirstOrDefault();
         }
+        public IEnumerable<Day> GetDaysWithinDateRange(DateTime startDate, DateTime endDate)
+        {
+            var days = RepositoryContext.Days.Where(d => d.Date >= startDate && d.Date <= endDate).ToList();
+            days.OrderBy(d => d.Date);
+            return days;
+        }
 
         public Day GetDayById(Guid id)
         {

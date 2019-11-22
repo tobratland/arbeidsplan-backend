@@ -13,6 +13,7 @@ namespace Arbeidsplan.Contracts
         Day GetDayByDate(DateTime date);
         Day CreateDay(Day day);
         void UpdateDay(Day dbDay, Day day);
+        IEnumerable<Day> GetDaysWithinDateRange(DateTime fromDateTime, DateTime ToDateTime);
         void DeleteDay(Day day);
     }
 }
