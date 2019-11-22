@@ -128,7 +128,7 @@ namespace Arbeidsplan.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest("Invalid model object");
+                    return BadRequest("Invalid model object.");
                 }
 
                 var dbDay = _repository.Day.GetDayById(id);
